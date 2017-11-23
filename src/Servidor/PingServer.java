@@ -38,7 +38,7 @@ public class PingServer {
             return;
         }*/
         //int port = Integer.parseInt(args[0]);
-        int port = 54302;
+        int port = 8080;
         Random random = new Random();
         
         DatagramSocket socket = new DatagramSocket(port);
