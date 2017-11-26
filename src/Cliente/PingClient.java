@@ -45,6 +45,7 @@ public class PingClient {
             DatagramSocket ds = new DatagramSocket();
             
             //Envia o pacote para o destino
+            System.out.print("Enviando para " + pkg.getAddress().getHostAddress() + ": " + mensagem);
             ds.send(pkg);
             try{
                 
@@ -59,7 +60,7 @@ public class PingClient {
                 tempo_ms = tempo.getTime() - tempo_ms;
                 
                 //Exibe a mensagem, caso o pacote seja retornado a tempo
-                System.out.print("PING " + String.valueOf(n_sequencia) + "\t" + tempo_ms + " ms\n");
+                System.out.print("PING " + String.valueOf(n_sequencia) + " " + tempo_ms + " ms\n");
             }catch(IOException e){
                 //Caso o pacote não seja retornado no tempo determinado, exibe a mensagem abaixo
                 System.out.print("Pacote " + String.valueOf(n_sequencia) + " perdido\n");
