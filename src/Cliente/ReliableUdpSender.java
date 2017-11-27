@@ -12,7 +12,6 @@ public class ReliableUdpSender {
 
     private static final int TIMEOUT = 1000;
     private static final int num_ack = 10;
-    private static boolean ack_nao_confirmado = true;
 
 
     public static int examinaDado(DatagramPacket recebido) throws IOException {
@@ -37,9 +36,11 @@ public class ReliableUdpSender {
         InetAddress endereco = InetAddress.getByName("127.0.0.1");
         int porta = 8080;
         int n_ack = 0; //Número de iteradas que é utilizado na mensagem
+        int ack_recebido;
+        boolean ack_nao_confirmado = true;
         String mensagem;    //Mensagem que será enviada
         byte[] buffer; //buffer que será usado no envio da mensagem para o servidor
-        while(n_ack < 10){
+        while(n_ack < num_ack){
             mensagem = "Mensagem ACK: " + String.valueOf(n_ack) + "\n";
             buffer = mensagem.getBytes();
 
@@ -54,12 +55,16 @@ public class ReliableUdpSender {
                 System.out.print("Enviando para " + pkg.getAddress().getHostAddress() + ": " + mensagem);
                 ds.send(pkg);
                 try {
-
                     //Define o tempo de espera pelo pacote
-                    ds.setSoTimeout(TIMEOUT);
+                    do {
+                        ds.setSoTimeout(TIMEOUT);
 
-                    ds.receive(pkg);
-                    System.out.println("ACK: " + examinaDado(pkg) + " confirmado");
+                        ds.receive(pkg);
+                        ack_recebido = examinaDado(pkg);
+
+                    }while(ack_recebido != n_ack);
+
+                    System.out.println("ACK: " + ack_recebido + " confirmado");
                     ack_nao_confirmado = false;
                 } catch (IOException e) {
                     //Caso o pacote não seja retornado no tempo determinado, exibe a mensagem abaixo
