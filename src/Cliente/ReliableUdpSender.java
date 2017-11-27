@@ -50,12 +50,13 @@ public class ReliableUdpSender {
             //Abre a conexão
             DatagramSocket ds = new DatagramSocket();
 
-            //Envia o pacote para o destino
+            //Envia a mensagem até o ack ser confirmado pelo servidor
             while(ack_nao_confirmado) {
                 System.out.print("Enviando para " + pkg.getAddress().getHostAddress() + ": " + mensagem);
                 ds.send(pkg);
                 try {
-                    //Define o tempo de espera pelo pacote
+
+                    //Caso haja falta de sincronia, entra em espera até que o ack corrente seja confirmado
                     do {
                         ds.setSoTimeout(TIMEOUT);
 
@@ -64,7 +65,9 @@ public class ReliableUdpSender {
 
                     }while(ack_recebido != n_ack);
 
+                    //Imprime o ack confirmado
                     System.out.println("ACK: " + ack_recebido + " confirmado");
+                    //Interrompe o laço
                     ack_nao_confirmado = false;
                 } catch (IOException e) {
                     //Caso o pacote não seja retornado no tempo determinado, exibe a mensagem abaixo
